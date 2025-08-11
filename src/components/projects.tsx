@@ -665,8 +665,8 @@ export default function Projects() {
       </div>
     </section>
   );
-}blue-400 mb-2">3</div>
+}
+                <div className="text-3xl font-bold text-blue-400 mb-2">3</div>
                 <div className="text-slate-400">Major Projects</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-
