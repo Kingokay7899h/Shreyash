@@ -659,6 +659,10 @@ export default function Projects() {
                 <div className="text-3xl font-bold text-purple-400 mb-2">15+</div>
                 <div className="text-slate-400">Technologies Used</div>
               </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-blue-400 mb-2">3</div>
+                <div className="text-slate-400">Major Projects</div>
+              </div>
             </div>
           </div>
         </motion.div>
@@ -666,7 +670,3 @@ export default function Projects() {
     </section>
   );
 }
-                <div className="text-3xl font-bold text-blue-400 mb-2">3</div>
-                <div className="text-slate-400">Major Projects</div>
-              </div>
-              <div className="text-center">
