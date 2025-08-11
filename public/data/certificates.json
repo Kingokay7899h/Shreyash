@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Human-Computer Interaction",
+    "issuer": "NPTEL",
+    "image": "/images/certificates/hci_nptel.jpg"
+  },
+  {
+    "title": "Social Network Analysis",
+    "issuer": "NPTEL",
+    "image": "/images/certificates/social_network_nptel.jpg"
+  },
+  {
+    "title": "Leadership and Team Effectiveness",
+    "issuer": "NPTEL",
+    "image": "/images/certificates/leadership_nptel.jpg"
+  },
+  {
+    "title": "Privacy and Security in Online Social Media",
+    "issuer": "NPTEL",
+    "image": "/images/certificates/privacy_security_nptel.jpg"
+  }
+]

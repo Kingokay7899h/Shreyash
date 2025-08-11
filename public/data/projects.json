@@ -1,0 +1,41 @@
+[
+  {
+    "id": "dams",
+    "title": "DAMS - Departmental Asset Management System",
+    "description": "Digitized procurement, inventory, maintenance, student issues, and disposal across a college department. Included OTP-secured login, role-based dashboards, sub-role logins, multi-level approval for procurement and disposal, e-signatures, email alerts, form trackers, PDF generation, inventory sync, maintenance emails, and audit-logged issue tracking.",
+    "technologies": ["PHP", "MySQL", "Digital Workflows"],
+    "images": [
+      "/images/projects/dams/dams_dashboard.jpg",
+      "/images/projects/dams/dams_procurement.jpg",
+      "/images/projects/dams/dams_inventory.jpg",
+      "/images/projects/dams/dams_maintenance.jpg",
+      "/images/projects/dams/dams_reports.jpg"
+    ]
+  },
+  {
+    "id": "puregleam",
+    "title": "PureGleam - Dental Clinic Management",
+    "description": "Developed a responsive web application for dental clinics featuring service listings, patient reviews, appointment booking, and automated email notifications.",
+    "technologies": ["PHP", "MySQL", "HTML/CSS", "Bootstrap"],
+    "images": [
+      "/images/projects/puregleam/puregleam_home.jpg",
+      "/images/projects/puregleam/puregleam_services.jpg",
+      "/images/projects/puregleam/puregleam_booking.jpg",
+      "/images/projects/puregleam/puregleam_reviews.jpg",
+      "/images/projects/puregleam/puregleam_dashboard.jpg"
+    ]
+  },
+  {
+    "id": "cricket_gear",
+    "title": "Cricket Gear Hub - E-commerce Mobile App",
+    "description": "Designed complete e-commerce mobile app UI/UX with 200+ wireframes and interactive prototypes in Figma.",
+    "technologies": ["Figma", "UI/UX Design", "Mobile App Design"],
+    "images": [
+      "/images/projects/cricket_gear/cricket_wireframes.jpg",
+      "/images/projects/cricket_gear/cricket_home.jpg",
+      "/images/projects/cricket_gear/cricket_products.jpg",
+      "/images/projects/cricket_gear/cricket_cart.jpg",
+      "/images/projects/cricket_gear/cricket_profile.jpg"
+    ]
+  }
+]

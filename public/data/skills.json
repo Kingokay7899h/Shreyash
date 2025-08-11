@@ -1,0 +1,14 @@
+{
+  "webProgramming": [
+    "HTML", "CSS", "JavaScript", "PHP", "SQL", "jQuery"
+  ],
+  "backendAPIs": [
+    "MySQL", "CRUD Operations", "RESTful APIs", "AJAX"
+  ],
+  "toolsPlatforms": [
+    "Git", "GitHub", "VS Code", "Linux"
+  ],
+  "designDevelopment": [
+    "UI/UX Design", "Figma", "Responsive Design", "Bootstrap", "Wireframing", "Prototyping"
+  ]
+}
