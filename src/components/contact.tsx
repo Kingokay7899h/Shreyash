@@ -57,6 +57,30 @@ function ContactElements() {
             />
           </mesh>
           <mesh position={[0, 0, 0.12]}>
+            <boxGeometry args={[0.6, 1, 0.05]} />
+            <meshStandardMaterial 
+              color="#064e3b" 
+              emissive="#065f46" 
+              emissiveIntensity={0.5}
+            />
+          </mesh>
+        </group>
+      </Float>
+
+      {/* Email Icon */}
+      <Float speed={1.8} rotationIntensity={0.2} floatIntensity={0.3}>
+        <group ref={emailRef} position={[0, 1, 0]}>
+          <mesh>
+            <boxGeometry args={[1.5, 1, 0.2]} />
+            <meshStandardMaterial 
+              color="#3b82f6" 
+              emissive="#3b82f6" 
+              emissiveIntensity={0.3}
+              metalness={0.7}
+              roughness={0.3}
+            />
+          </mesh>
+          <mesh position={[0, 0, 0.12]}>
             <boxGeometry args={[1.3, 0.8, 0.05]} />
             <meshStandardMaterial 
               color="#1e40af" 
@@ -523,28 +547,4 @@ export default function Contact() {
       </div>
     </section>
   );
-}, 0, 0.12]}>
-            <boxGeometry args={[0.6, 1, 0.05]} />
-            <meshStandardMaterial 
-              color="#064e3b" 
-              emissive="#065f46" 
-              emissiveIntensity={0.5}
-            />
-          </mesh>
-        </group>
-      </Float>
-
-      {/* Email Icon */}
-      <Float speed={1.8} rotationIntensity={0.2} floatIntensity={0.3}>
-        <group ref={emailRef} position={[0, 1, 0]}>
-          <mesh>
-            <boxGeometry args={[1.5, 1, 0.2]} />
-            <meshStandardMaterial 
-              color="#3b82f6" 
-              emissive="#3b82f6" 
-              emissiveIntensity={0.3}
-              metalness={0.7}
-              roughness={0.3}
-            />
-          </mesh>
-          <mesh position={[0
+              }
