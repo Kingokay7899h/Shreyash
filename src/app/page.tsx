@@ -5,32 +5,32 @@ import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 
-// Dynamic imports for better performance
-const Hero = dynamic(() => import('../components/Hero'), {
+// Dynamic imports for better performance - Fixed import paths
+const Hero = dynamic(() => import('../components/hero'), {
   loading: () => <LoadingSpinner text="Loading Hero Section..." />
 });
 
-const Education = dynamic(() => import('../components/Education'), {
+const Education = dynamic(() => import('../components/education'), {
   loading: () => <LoadingSpinner text="Loading Educational Journey..." />
 });
 
-const Skills = dynamic(() => import('../components/Skills'), {
+const Skills = dynamic(() => import('../components/skills'), {
   loading: () => <LoadingSpinner text="Loading Skills..." />
 });
 
-const Projects = dynamic(() => import('../components/Projects'), {
+const Projects = dynamic(() => import('../components/projects'), {
   loading: () => <LoadingSpinner text="Loading Projects..." />
 });
 
-const Internship = dynamic(() => import('../components/Internship'), {
+const Internship = dynamic(() => import('../components/internship'), {
   loading: () => <LoadingSpinner text="Loading Internship Experience..." />
 });
 
-const Certificates = dynamic(() => import('../components/Certificates'), {
+const Certificates = dynamic(() => import('../components/certificates'), {
   loading: () => <LoadingSpinner text="Loading Certificates..." />
 });
 
-const Contact = dynamic(() => import('../components/Contact'), {
+const Contact = dynamic(() => import('../components/contact'), {
   loading: () => <LoadingSpinner text="Loading Contact Information..." />
 });
 
