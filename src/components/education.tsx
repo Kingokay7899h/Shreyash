@@ -84,12 +84,13 @@ function FlightPath() {
   const points = curve.getPoints(100);
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
+  // Create the line material
+  const material = new THREE.LineBasicMaterial({ color: '#f59e0b' });
+
   return (
     <group>
-      {/* Flight path line */}
-      <line geometry={geometry}>
-        <lineBasicMaterial color="#f59e0b" linewidth={3} />
-      </line>
+      {/* Flight path line - using primitive to create THREE.Line */}
+      <primitive object={new THREE.Line(geometry, material)} />
       
       {/* Location markers */}
       <Float speed={2} rotationIntensity={0.1} floatIntensity={0.1}>
@@ -108,7 +109,6 @@ function FlightPath() {
     </group>
   );
 }
-
 // Animated airplane following the flight path
 function AnimatedAirplane() {
   const airplaneRef = useRef<THREE.Group>(null);
