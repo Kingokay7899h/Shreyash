@@ -170,16 +170,14 @@ function SkillConnections() {
           const end = new THREE.Vector3(...pos2);
           const points = [start, end];
           const geometry = new THREE.BufferGeometry().setFromPoints(points);
+          const material = new THREE.LineBasicMaterial({ 
+            color: "#475569", 
+            transparent: true, 
+            opacity: 0.3 
+          });
           
           return (
-            <line key={`${i}-${j}`} geometry={geometry}>
-              <lineBasicMaterial 
-                color="#475569" 
-                transparent 
-                opacity={0.3}
-                linewidth={1}
-              />
-            </line>
+            <primitive key={`${i}-${j}`} object={new THREE.Line(geometry, material)} />
           );
         })
       )}
