@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { Sphere, PerspectiveCamera, Environment, Html, Float } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { Sphere, PerspectiveCamera, Environment, Float } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import { MapPin, Calendar, Award, Globe } from 'lucide-react';
@@ -12,37 +12,31 @@ function Earth() {
   
   useFrame(() => {
     if (earthRef.current) {
-      earthRef.current.rotation.y += 0.002; // Slow rotation
+      earthRef.current.rotation.y += 0.002;
     }
     if (cloudsRef.current) {
-      cloudsRef.current.rotation.y += 0.0015; // Slightly different speed for clouds
+      cloudsRef.current.rotation.y += 0.0015;
     }
   });
 
   return (
     <group>
-      {/* Earth sphere */}
       <Sphere ref={earthRef} args={[2, 64, 64]}>
         <meshStandardMaterial
-          map={null} // Placeholder - you'll need to add earth texture
-          normalMap={null} // Placeholder - you'll need to add normal map
           color="#4ade80"
           metalness={0.1}
           roughness={0.9}
         />
       </Sphere>
       
-      {/* Cloud layer */}
       <Sphere ref={cloudsRef} args={[2.02, 64, 64]}>
         <meshStandardMaterial
           transparent
           opacity={0.3}
           color="#ffffff"
-          alphaMap={null} // Placeholder - you'll need to add cloud texture
         />
       </Sphere>
       
-      {/* Atmosphere glow */}
       <Sphere args={[2.1, 64, 64]}>
         <meshBasicMaterial
           transparent
@@ -57,9 +51,6 @@ function Earth() {
 
 // Flight path component showing the journey from Oman to India
 function FlightPath() {
-  const pathRef = useRef<THREE.Line>(null);
-  
-  // Convert lat/lng to 3D coordinates on sphere
   const latLngTo3D = (lat: number, lng: number, radius: number = 2.05) => {
     const phi = (90 - lat) * (Math.PI / 180);
     const theta = (lng + 180) * (Math.PI / 180);
@@ -70,29 +61,23 @@ function FlightPath() {
     );
   };
 
-  // Coordinates for Muscat and Goa
   const muscatPos = latLngTo3D(23.5859, 58.4059);
   const goaPos = latLngTo3D(15.4167, 74.0167);
   
-  // Create curved path
   const curve = new THREE.QuadraticBezierCurve3(
     muscatPos,
-    new THREE.Vector3(0, 3, 0), // High point for flight arc
+    new THREE.Vector3(0, 3, 0),
     goaPos
   );
   
   const points = curve.getPoints(100);
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
-
-  // Create the line material
   const material = new THREE.LineBasicMaterial({ color: '#f59e0b' });
 
   return (
     <group>
-      {/* Flight path line - using primitive to create THREE.Line */}
       <primitive object={new THREE.Line(geometry, material)} />
       
-      {/* Location markers */}
       <Float speed={2} rotationIntensity={0.1} floatIntensity={0.1}>
         <mesh position={muscatPos}>
           <sphereGeometry args={[0.05, 16, 16]} />
@@ -109,6 +94,7 @@ function FlightPath() {
     </group>
   );
 }
+
 // Animated airplane following the flight path
 function AnimatedAirplane() {
   const airplaneRef = useRef<THREE.Group>(null);
@@ -118,7 +104,6 @@ function AnimatedAirplane() {
     setProgress((prev) => (prev + 0.005) % 1);
   });
 
-  // Convert lat/lng to 3D coordinates
   const latLngTo3D = (lat: number, lng: number, radius: number = 2.2) => {
     const phi = (90 - lat) * (Math.PI / 180);
     const theta = (lng + 180) * (Math.PI / 180);
@@ -150,14 +135,11 @@ function AnimatedAirplane() {
 
   return (
     <group ref={airplaneRef}>
-      {/* Simple airplane model */}
       <group scale={0.1}>
-        {/* Fuselage */}
         <mesh>
           <cylinderGeometry args={[0.1, 0.1, 2, 8]} />
           <meshStandardMaterial color="#e5e7eb" metalness={0.7} roughness={0.3} />
         </mesh>
-        {/* Wings */}
         <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
           <boxGeometry args={[3, 0.1, 0.5]} />
           <meshStandardMaterial color="#d1d5db" metalness={0.7} roughness={0.3} />
@@ -236,7 +218,6 @@ function EducationTimeline() {
 
   return (
     <div className="space-y-8">
-      {/* Timeline navigation */}
       <div className="flex flex-col md:flex-row justify-center space-y-2 md:space-y-0 md:space-x-4">
         {educationData.map((edu, index) => (
           <button
@@ -254,86 +235,6 @@ function EducationTimeline() {
         ))}
       </div>
 
-      {/* Education details */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={selectedEducation}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -20 }}
-          transition={{ duration: 0.3 }}
-          className="bg-slate-800/90 backdrop-blur-sm rounded-2xl p-8 border border-slate-600"
-        >
-// Education timeline component
-function EducationTimeline() {
-  const [selectedEducation, setSelectedEducation] = useState(0);
-  
-  const educationData = [
-    {
-      id: "muscat",
-      institution: "Indian School Muscat",
-      location: "Muscat, Oman",
-      degree: "Higher Secondary Education",
-      period: "2018-2019",
-      grade: "79.4%",
-      description: "Completed higher secondary education in Oman, developing strong English communication skills and international exposure.",
-      subjects: ["Science Stream", "Mathematics", "Physics", "Chemistry", "Computer Science"],
-      achievements: ["Academic Excellence", "Cultural Exchange Program", "English Proficiency"],
-      color: "from-red-500 to-orange-500"
-    },
-    {
-      id: "canacona",
-      institution: "Government Higher Secondary School",
-      location: "Canacona, Goa, India",
-      degree: "Pre-University Course", 
-      period: "2020-2021",
-      grade: "69%",
-      description: "Completed pre-university education in Goa, preparing for engineering entrance examinations.",
-      subjects: ["Physics", "Chemistry", "Mathematics", "Biology", "Computer Science"],
-      achievements: ["Engineering Entrance Preparation", "State Board Curriculum", "Local Integration"],
-      color: "from-blue-500 to-purple-500"
-    },
-    {
-      id: "gce",
-      institution: "Goa College of Engineering",
-      location: "Farmagudi, Ponda, Goa, India",
-      degree: "Bachelor of Engineering in Computer Engineering",
-      period: "2021-2025",
-      status: "Final Year Student",
-      description: "Pursuing Bachelor's degree in Computer Engineering with focus on database systems, web development, and UI/UX design.",
-      specializations: [
-        "Database Management Systems",
-        "Web Technologies", 
-        "Software Engineering",
-        "Human-Computer Interaction",
-        "Network Security"
-      ],
-      achievements: ["Academic Project Leadership", "Technical Innovation", "Industry Exposure"],
-      color: "from-green-500 to-blue-500"
-    }
-  ];
-
-  return (
-    <div className="space-y-8">
-      {/* Timeline navigation */}
-      <div className="flex flex-col md:flex-row justify-center space-y-2 md:space-y-0 md:space-x-4">
-        {educationData.map((edu, index) => (
-          <button
-            key={edu.id}
-            onClick={() => setSelectedEducation(index)}
-            className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
-              selectedEducation === index
-                ? 'bg-gradient-to-r ' + edu.color + ' text-white shadow-lg scale-105'
-                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-            }`}
-          >
-            <div className="text-sm font-bold">{edu.institution.split(' ')[0]} {edu.institution.split(' ')[1]}</div>
-            <div className="text-xs opacity-80">{edu.period}</div>
-          </button>
-        ))}
-      </div>
-
-      {/* Education details */}
       <AnimatePresence mode="wait">
         <motion.div
           key={selectedEducation}
@@ -344,7 +245,6 @@ function EducationTimeline() {
           className="bg-slate-800/90 backdrop-blur-sm rounded-2xl p-8 border border-slate-600"
         >
           <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main info */}
             <div className="lg:col-span-2">
               <div className="flex items-start justify-between mb-6">
                 <div>
@@ -379,7 +279,6 @@ function EducationTimeline() {
                 </p>
               </div>
 
-              {/* Subjects/Specializations */}
               <div className="mb-6">
                 <h4 className="text-lg font-semibold text-white mb-3">
                   {educationData[selectedEducation].specializations ? 'Specializations' : 'Subjects'}
@@ -397,7 +296,6 @@ function EducationTimeline() {
               </div>
             </div>
 
-            {/* Achievements sidebar */}
             <div>
               <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
                 <Award className="w-5 h-5 mr-2 text-yellow-500" />
@@ -434,7 +332,6 @@ export default function Education() {
   return (
     <section className="min-h-screen py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="container mx-auto px-6">
-        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -451,7 +348,6 @@ export default function Education() {
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-start mb-16">
-          {/* Left side - 3D Earth Scene */}
           <motion.div
             initial={{ opacity: 0, x: -50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -462,7 +358,6 @@ export default function Education() {
                 <EarthScene />
               </Canvas>
               
-              {/* Legend overlay */}
               <div className="absolute top-4 left-4 bg-slate-800/90 backdrop-blur-sm rounded-lg p-4 border border-slate-600">
                 <div className="text-sm text-white font-semibold mb-3">Educational Journey</div>
                 <div className="space-y-2 text-xs">
@@ -481,7 +376,6 @@ export default function Education() {
                 </div>
               </div>
 
-              {/* Stats overlay */}
               <div className="absolute bottom-4 right-4 bg-slate-800/90 backdrop-blur-sm rounded-lg p-4 border border-slate-600">
                 <div className="grid grid-cols-2 gap-4 text-center">
                   <div>
@@ -497,7 +391,6 @@ export default function Education() {
             </div>
           </motion.div>
 
-          {/* Right side - Journey highlights */}
           <motion.div
             initial={{ opacity: 0, x: 50 }}
             whileInView={{ opacity: 1, x: 0 }}
@@ -536,7 +429,6 @@ export default function Education() {
           </motion.div>
         </div>
 
-        {/* Education Timeline */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -545,7 +437,6 @@ export default function Education() {
           <EducationTimeline />
         </motion.div>
 
-        {/* Future aspirations */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -580,4 +471,4 @@ export default function Education() {
       </div>
     </section>
   );
-}
+                                                                                                                              } 
