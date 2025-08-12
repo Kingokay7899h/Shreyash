@@ -264,6 +264,85 @@ function EducationTimeline() {
           transition={{ duration: 0.3 }}
           className="bg-slate-800/90 backdrop-blur-sm rounded-2xl p-8 border border-slate-600"
         >
+// Education timeline component
+function EducationTimeline() {
+  const [selectedEducation, setSelectedEducation] = useState(0);
+  
+  const educationData = [
+    {
+      id: "muscat",
+      institution: "Indian School Muscat",
+      location: "Muscat, Oman",
+      degree: "Higher Secondary Education",
+      period: "2018-2019",
+      grade: "79.4%",
+      description: "Completed higher secondary education in Oman, developing strong English communication skills and international exposure.",
+      subjects: ["Science Stream", "Mathematics", "Physics", "Chemistry", "Computer Science"],
+      achievements: ["Academic Excellence", "Cultural Exchange Program", "English Proficiency"],
+      color: "from-red-500 to-orange-500"
+    },
+    {
+      id: "canacona",
+      institution: "Government Higher Secondary School",
+      location: "Canacona, Goa, India",
+      degree: "Pre-University Course", 
+      period: "2020-2021",
+      grade: "69%",
+      description: "Completed pre-university education in Goa, preparing for engineering entrance examinations.",
+      subjects: ["Physics", "Chemistry", "Mathematics", "Biology", "Computer Science"],
+      achievements: ["Engineering Entrance Preparation", "State Board Curriculum", "Local Integration"],
+      color: "from-blue-500 to-purple-500"
+    },
+    {
+      id: "gce",
+      institution: "Goa College of Engineering",
+      location: "Farmagudi, Ponda, Goa, India",
+      degree: "Bachelor of Engineering in Computer Engineering",
+      period: "2021-2025",
+      status: "Final Year Student",
+      description: "Pursuing Bachelor's degree in Computer Engineering with focus on database systems, web development, and UI/UX design.",
+      specializations: [
+        "Database Management Systems",
+        "Web Technologies", 
+        "Software Engineering",
+        "Human-Computer Interaction",
+        "Network Security"
+      ],
+      achievements: ["Academic Project Leadership", "Technical Innovation", "Industry Exposure"],
+      color: "from-green-500 to-blue-500"
+    }
+  ];
+
+  return (
+    <div className="space-y-8">
+      {/* Timeline navigation */}
+      <div className="flex flex-col md:flex-row justify-center space-y-2 md:space-y-0 md:space-x-4">
+        {educationData.map((edu, index) => (
+          <button
+            key={edu.id}
+            onClick={() => setSelectedEducation(index)}
+            className={`px-6 py-3 rounded-lg font-medium transition-all duration-300 ${
+              selectedEducation === index
+                ? 'bg-gradient-to-r ' + edu.color + ' text-white shadow-lg scale-105'
+                : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+            }`}
+          >
+            <div className="text-sm font-bold">{edu.institution.split(' ')[0]} {edu.institution.split(' ')[1]}</div>
+            <div className="text-xs opacity-80">{edu.period}</div>
+          </button>
+        ))}
+      </div>
+
+      {/* Education details */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={selectedEducation}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -20 }}
+          transition={{ duration: 0.3 }}
+          className="bg-slate-800/90 backdrop-blur-sm rounded-2xl p-8 border border-slate-600"
+        >
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Main info */}
             <div className="lg:col-span-2">
@@ -316,6 +395,7 @@ function EducationTimeline() {
                   ))}
                 </div>
               </div>
+            </div>
 
             {/* Achievements sidebar */}
             <div>
