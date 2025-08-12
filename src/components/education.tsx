@@ -1,14 +1,19 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Sphere, PerspectiveCamera, Environment, Float } from '@react-three/drei';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
+import { Sphere, PerspectiveCamera, Environment, Float, useGLTF } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import { MapPin, Calendar, Award, Globe } from 'lucide-react';
 
-// Earth component with realistic textures and rotation
-function Earth() {
+// Realistic Earth component with your actual textures
+function RealisticEarth() {
   const earthRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
+  
+  // Load your actual textures
+  const earthTexture = useLoader(THREE.TextureLoader, '/textures/earth_8k.jpg');
+  const normalTexture = useLoader(THREE.TextureLoader, '/textures/earth_normal.jpg');
+  const cloudsTexture = useLoader(THREE.TextureLoader, '/textures/clouds.png');
   
   useFrame(() => {
     if (earthRef.current) {
@@ -21,22 +26,27 @@ function Earth() {
 
   return (
     <group>
+      {/* Main Earth sphere with realistic textures */}
       <Sphere ref={earthRef} args={[2, 64, 64]}>
         <meshStandardMaterial
-          color="#4ade80"
+          map={earthTexture}
+          normalMap={normalTexture}
           metalness={0.1}
           roughness={0.9}
         />
       </Sphere>
       
+      {/* Cloud layer */}
       <Sphere ref={cloudsRef} args={[2.02, 64, 64]}>
         <meshStandardMaterial
+          map={cloudsTexture}
           transparent
-          opacity={0.3}
-          color="#ffffff"
+          opacity={0.4}
+          alphaMap={cloudsTexture}
         />
       </Sphere>
       
+      {/* Atmosphere glow */}
       <Sphere args={[2.1, 64, 64]}>
         <meshBasicMaterial
           transparent
@@ -49,7 +59,67 @@ function Earth() {
   );
 }
 
-// Flight path component showing the journey from Oman to India
+// Tiny airplane component using your GLB model
+function TinyAirplane() {
+  const { scene } = useGLTF('/models/airplane.glb');
+  const airplaneRef = useRef<THREE.Group>(null);
+  const [progress, setProgress] = useState(0);
+  
+  useFrame(() => {
+    setProgress((prev) => (prev + 0.003) % 1); // Slower for more realistic flight
+  });
+
+  // Convert lat/lng to 3D coordinates
+  const latLngTo3D = (lat: number, lng: number, radius: number = 2.15) => {
+    const phi = (90 - lat) * (Math.PI / 180);
+    const theta = (lng + 180) * (Math.PI / 180);
+    return new THREE.Vector3(
+      -radius * Math.sin(phi) * Math.cos(theta),
+      radius * Math.cos(phi),
+      radius * Math.sin(phi) * Math.sin(theta)
+    );
+  };
+
+  const muscatPos = latLngTo3D(23.5859, 58.4059); // Oman
+  const goaPos = latLngTo3D(15.4167, 74.0167);   // Goa
+  
+  // Create curved flight path
+  const curve = new THREE.QuadraticBezierCurve3(
+    muscatPos,
+    new THREE.Vector3(0, 3.5, 0), // Higher arc
+    goaPos
+  );
+  
+  const currentPosition = curve.getPointAt(progress);
+  const nextPosition = curve.getPointAt((progress + 0.01) % 1);
+  
+  useEffect(() => {
+    if (airplaneRef.current && scene) {
+      // Position airplane
+      airplaneRef.current.position.copy(currentPosition);
+      
+      // Make airplane look towards next position
+      const lookAtVector = nextPosition.clone().sub(currentPosition).normalize();
+      airplaneRef.current.lookAt(
+        currentPosition.x + lookAtVector.x,
+        currentPosition.y + lookAtVector.y,
+        currentPosition.z + lookAtVector.z
+      );
+    }
+  }, [currentPosition, nextPosition, scene]);
+
+  return (
+    <group ref={airplaneRef}>
+      <primitive 
+        object={scene.clone()} 
+        scale={0.05} // Tiny airplane
+        rotation={[0, Math.PI, 0]} // Adjust orientation if needed
+      />
+    </group>
+  );
+}
+
+// Flight path visualization
 function FlightPath() {
   const latLngTo3D = (lat: number, lng: number, radius: number = 2.05) => {
     const phi = (90 - lat) * (Math.PI / 180);
@@ -72,22 +142,26 @@ function FlightPath() {
   
   const points = curve.getPoints(100);
   const geometry = new THREE.BufferGeometry().setFromPoints(points);
-  const material = new THREE.LineBasicMaterial({ color: '#f59e0b' });
 
   return (
     <group>
-      <primitive object={new THREE.Line(geometry, material)} />
+      {/* Flight path line */}
+      <line geometry={geometry}>
+        <lineBasicMaterial color="#f59e0b" linewidth={2} />
+      </line>
       
+      {/* Muscat marker (red dot) */}
       <Float speed={2} rotationIntensity={0.1} floatIntensity={0.1}>
         <mesh position={muscatPos}>
-          <sphereGeometry args={[0.05, 16, 16]} />
+          <sphereGeometry args={[0.04, 16, 16]} />
           <meshStandardMaterial color="#ef4444" emissive="#ef4444" emissiveIntensity={0.5} />
         </mesh>
       </Float>
       
+      {/* Goa marker (green dot) */}
       <Float speed={2.2} rotationIntensity={0.1} floatIntensity={0.1}>
         <mesh position={goaPos}>
-          <sphereGeometry args={[0.05, 16, 16]} />
+          <sphereGeometry args={[0.04, 16, 16]} />
           <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={0.5} />
         </mesh>
       </Float>
@@ -95,61 +169,7 @@ function FlightPath() {
   );
 }
 
-// Animated airplane following the flight path
-function AnimatedAirplane() {
-  const airplaneRef = useRef<THREE.Group>(null);
-  const [progress, setProgress] = useState(0);
-  
-  useFrame(() => {
-    setProgress((prev) => (prev + 0.005) % 1);
-  });
-
-  const latLngTo3D = (lat: number, lng: number, radius: number = 2.2) => {
-    const phi = (90 - lat) * (Math.PI / 180);
-    const theta = (lng + 180) * (Math.PI / 180);
-    return new THREE.Vector3(
-      -radius * Math.sin(phi) * Math.cos(theta),
-      radius * Math.cos(phi),
-      radius * Math.sin(phi) * Math.sin(theta)
-    );
-  };
-
-  const muscatPos = latLngTo3D(23.5859, 58.4059);
-  const goaPos = latLngTo3D(15.4167, 74.0167);
-  
-  const curve = new THREE.QuadraticBezierCurve3(
-    muscatPos,
-    new THREE.Vector3(0, 3.2, 0),
-    goaPos
-  );
-  
-  const currentPosition = curve.getPointAt(progress);
-  const nextPosition = curve.getPointAt((progress + 0.01) % 1);
-  
-  useEffect(() => {
-    if (airplaneRef.current) {
-      airplaneRef.current.position.copy(currentPosition);
-      airplaneRef.current.lookAt(nextPosition);
-    }
-  }, [currentPosition, nextPosition]);
-
-  return (
-    <group ref={airplaneRef}>
-      <group scale={0.1}>
-        <mesh>
-          <cylinderGeometry args={[0.1, 0.1, 2, 8]} />
-          <meshStandardMaterial color="#e5e7eb" metalness={0.7} roughness={0.3} />
-        </mesh>
-        <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-          <boxGeometry args={[3, 0.1, 0.5]} />
-          <meshStandardMaterial color="#d1d5db" metalness={0.7} roughness={0.3} />
-        </mesh>
-      </group>
-    </group>
-  );
-}
-
-// 3D Scene component
+// Main 3D Scene with realistic Earth
 function EarthScene() {
   return (
     <>
@@ -158,16 +178,21 @@ function EarthScene() {
       <directionalLight position={[10, 10, 5]} intensity={0.8} />
       <pointLight position={[-10, -10, -5]} intensity={0.3} color="#60a5fa" />
       
-      <Earth />
+      {/* Your realistic Earth model instead of green ball */}
+      <RealisticEarth />
+      
+      {/* Flight path between Oman and Goa */}
       <FlightPath />
-      <AnimatedAirplane />
+      
+      {/* Tiny airplane flying the route */}
+      <TinyAirplane />
       
       <Environment preset="night" />
     </>
   );
 }
 
-// Education timeline component
+// Education timeline component (unchanged)
 function EducationTimeline() {
   const [selectedEducation, setSelectedEducation] = useState(0);
   
@@ -471,4 +496,4 @@ export default function Education() {
       </div>
     </section>
   );
-                                                                                                                              } 
+}
