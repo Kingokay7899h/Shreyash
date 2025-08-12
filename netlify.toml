@@ -1,6 +1,6 @@
 [build]
   command = "npm run build"
-  # Remove the publish line completely
+  publish = "out"
 
 [[redirects]]
   from = "/*"
