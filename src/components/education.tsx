@@ -306,7 +306,7 @@ function EducationTimeline() {
                   {educationData[selectedEducation].specializations ? 'Specializations' : 'Subjects'}
                 </h4>
                 <div className="flex flex-wrap gap-2">
-                  {(educationData[selectedEducation].specializations || educationData[selectedEducation].subjects).map((item, index) => (
+                  {(educationData[selectedEducation].specializations || educationData[selectedEducation].subjects || []).map((item, index) => (
                     <span
                       key={index}
                       className="px-3 py-1 bg-slate-700 text-slate-300 rounded-full text-sm border border-slate-600"
@@ -316,7 +316,6 @@ function EducationTimeline() {
                   ))}
                 </div>
               </div>
-            </div>
 
             {/* Achievements sidebar */}
             <div>
