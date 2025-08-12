@@ -6,7 +6,7 @@ import * as THREE from 'three';
 
 // Floating particles background
 function ParticleField() {
-  const mesh = useRef();
+  const mesh = useRef<THREE.Points>(null);
   
   const particles = useMemo(() => {
     const temp = [];
@@ -48,7 +48,7 @@ function ParticleField() {
 
 // 3D floating laptop model - NOW LOADS ACTUAL GLB
 function FloatingLaptop() {
-  const laptopRef = useRef();
+  const laptopRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF('/models/laptop.glb');
 
   useFrame((state) => {
@@ -69,7 +69,7 @@ function FloatingLaptop() {
 
 // Earth model component
 function FloatingEarth() {
-  const earthRef = useRef();
+  const earthRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF('/models/earth.glb');
 
   useFrame((state) => {
@@ -91,7 +91,7 @@ function FloatingEarth() {
 
 // Airplane model component
 function FloatingAirplane() {
-  const airplaneRef = useRef();
+  const airplaneRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF('/models/airplane.glb');
 
   useFrame((state) => {
