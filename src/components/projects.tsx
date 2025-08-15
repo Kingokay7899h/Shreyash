@@ -100,6 +100,113 @@ const projectsData = [
   }
 ];
 
+// ADD THIS ENTIRE COMPONENT:
+// NEW: Interactive Laptop component that shows projects on the screen
+function InteractiveLaptop({ selectedProject }: { selectedProject: string | null }) {
+  const laptopRef = useRef<THREE.Group>(null);
+  const { scene } = useGLTF('/models/laptop.glb');
+  const [hovering, setHovering] = useState(false);
+
+  useFrame((state) => {
+    if (laptopRef.current) {
+      // Gentle floating animation
+      laptopRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.1;
+      laptopRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.05;
+      
+      // Scale based on selection
+      const targetScale = selectedProject ? 1.1 : hovering ? 1.05 : 1;
+      laptopRef.current.scale.lerp(new THREE.Vector3(targetScale, targetScale, targetScale), 0.1);
+    }
+  });
+
+  const selectedProjectData = projectsData.find(p => p.id === selectedProject);
+
+  return (
+    <Float speed={1.2} rotationIntensity={0.1} floatIntensity={0.2}>
+      <group 
+        ref={laptopRef} 
+        position={[0, -1, 2]}
+        scale={[0.8, 0.8, 0.8]}
+        onPointerEnter={() => setHovering(true)}
+        onPointerLeave={() => setHovering(false)}
+      >
+        <primitive object={scene.clone()} />
+        
+        {/* Virtual screen showing project */}
+        <Html
+          position={[0, 0.4, -0.1]} // Position on laptop screen
+          transform
+          scale={0.2}
+          style={{
+            width: '800px',
+            height: '500px',
+            background: selectedProjectData ? '#1e293b' : '#374151',
+            borderRadius: '8px',
+            padding: '20px',
+            color: 'white',
+            fontSize: '16px',
+            overflow: 'hidden',
+            border: '2px solid #475569'
+          }}
+        >
+          {selectedProjectData ? (
+            <div className="w-full h-full flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center">
+                  <div 
+                    className="w-4 h-4 rounded-full mr-2"
+                    style={{ backgroundColor: selectedProjectData.color }}
+                  ></div>
+                  <h3 className="text-xl font-bold text-white truncate">
+                    {selectedProjectData.title}
+                  </h3>
+                </div>
+                <span className="text-xs bg-blue-600 px-2 py-1 rounded">
+                  {selectedProjectData.status}
+                </span>
+              </div>
+              
+              <div className="flex-1 overflow-hidden">
+                <img
+                  src={selectedProjectData.images[0]}
+                  alt={selectedProjectData.title}
+                  className="w-full h-48 object-cover rounded mb-3"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect width='100%25' height='100%25' fill='%23374151'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' fill='%23d1d5db'%3EProject Preview%3C/text%3E%3C/svg%3E";
+                  }}
+                />
+                
+                <p className="text-sm text-gray-300 mb-3">
+                  {selectedProjectData.description.substring(0, 150)}...
+                </p>
+                
+                <div className="flex flex-wrap gap-1">
+                  {selectedProjectData.technologies.slice(0, 4).map((tech) => (
+                    <span
+                      key={tech}
+                      className="text-xs px-2 py-1 bg-gray-700 rounded text-gray-200"
+                    >
+                      {tech}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full h-full flex flex-col items-center justify-center text-center">
+              <Code className="w-16 h-16 text-gray-500 mb-4" />
+              <h3 className="text-xl font-bold text-white mb-2">Select a Project</h3>
+              <p className="text-gray-400 text-sm">
+                Click on any project card to see it displayed on this laptop screen
+              </p>
+            </div>
+          )}
+        </Html>
+      </group>
+    </Float>
+  );
+}
+
 // 3D Project Card component
 function ProjectCard3D({ 
   project, 
@@ -191,6 +298,7 @@ function ProjectCard3D({
 }
 
 // 3D Scene for projects
+// FIND THIS FUNCTION AND ADD THE LAPTOP LINE:
 function ProjectsScene({ 
   selectedProject, 
   onProjectSelect 
@@ -204,6 +312,9 @@ function ProjectsScene({
       <ambientLight intensity={0.4} />
       <directionalLight position={[10, 10, 5]} intensity={0.8} />
       <pointLight position={[-10, -10, -5]} intensity={0.3} color="#60a5fa" />
+      
+      {/* ADD THIS LINE: */}
+      <InteractiveLaptop selectedProject={selectedProject} />
       
       {projectsData.map((project) => (
         <ProjectCard3D
@@ -670,3 +781,5 @@ export default function Projects() {
     </section>
   );
 }
+// ADD AT THE BOTTOM:
+useGLTF.preload('/models/laptop.glb');
