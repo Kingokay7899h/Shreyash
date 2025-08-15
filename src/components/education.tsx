@@ -126,7 +126,7 @@ function RealisticAirplane() {
     <group ref={airplaneRef}>
       <primitive 
         object={scene.clone()} 
-        scale={0.015} // FIXED: Much smaller, realistic scale
+        scale={0.003} // FIXED: Much smaller, realistic scale
         rotation={[0, Math.PI, 0]}
       />
       
