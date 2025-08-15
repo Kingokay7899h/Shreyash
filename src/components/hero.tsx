@@ -46,7 +46,7 @@ function ParticleField() {
   );
 }
 
-// 3D floating laptop model - NOW LOADS ACTUAL GLB
+// 3D floating laptop model
 function FloatingLaptop() {
   const laptopRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF('/models/laptop.glb');
@@ -67,29 +67,10 @@ function FloatingLaptop() {
   );
 }
 
-// Earth model component
-function FloatingEarth() {
-  const earthRef = useRef<THREE.Group>(null);
-  const { scene } = useGLTF('/models/earth.glb');
+// REMOVED: FloatingEarth component - this was causing the conflict!
+// The earth model should only appear in the Education section
 
-  useFrame((state) => {
-    if (earthRef.current) {
-      earthRef.current.rotation.y = state.clock.elapsedTime * 0.2;
-      earthRef.current.position.x = Math.sin(state.clock.elapsedTime * 0.3) * 2 + 4;
-      earthRef.current.position.y = Math.cos(state.clock.elapsedTime * 0.4) * 1;
-    }
-  });
-
-  return (
-    <Float speed={1.2} rotationIntensity={0.2} floatIntensity={0.3}>
-      <group ref={earthRef} position={[4, 2, -2]} scale={[0.3, 0.3, 0.3]}>
-        <primitive object={scene.clone()} />
-      </group>
-    </Float>
-  );
-}
-
-// Airplane model component
+// Airplane model component - keeping this as it's relevant for the hero
 function FloatingAirplane() {
   const airplaneRef = useRef<THREE.Group>(null);
   const { scene } = useGLTF('/models/airplane.glb');
@@ -121,7 +102,7 @@ function LoadingFallback() {
   );
 }
 
-// 3D Text component with fallback fonts
+// 3D Text component
 function Hero3DText() {
   return (
     <group position={[-1, 0, 0]}>
@@ -155,7 +136,7 @@ function Hero3DText() {
   );
 }
 
-// 3D Scene component
+// 3D Scene component - FIXED: Removed FloatingEarth
 function Scene3D() {
   return (
     <>
@@ -169,7 +150,7 @@ function Scene3D() {
       
       <Suspense fallback={<LoadingFallback />}>
         <FloatingLaptop />
-        <FloatingEarth />
+        {/* REMOVED: <FloatingEarth /> - This was causing the conflict */}
         <FloatingAirplane />
       </Suspense>
       
@@ -199,7 +180,7 @@ function ScrollIndicator() {
   );
 }
 
-// Main Hero component with FIXED MOBILE RESPONSIVENESS
+// Main Hero component
 export default function Hero() {
   return (
     <section className="relative h-screen w-full overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
@@ -212,7 +193,7 @@ export default function Hero() {
         <Scene3D />
       </Canvas>
 
-      {/* Overlay content - FIXED MOBILE TEXT SIZES */}
+      {/* Overlay content */}
       <div className="relative z-10 flex items-center justify-center h-full px-4">
         <div className="text-center max-w-4xl mx-auto">
           <motion.div
@@ -221,7 +202,6 @@ export default function Hero() {
             transition={{ duration: 1, ease: "easeOut" }}
             className="mb-6"
           >
-            {/* FIXED: Much better mobile text sizing */}
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-8xl font-bold text-white mb-4 tracking-tight leading-tight">
               <span className="bg-gradient-to-r from-blue-400 via-purple-500 to-cyan-400 bg-clip-text text-transparent">
                 SHREYASH
@@ -237,7 +217,6 @@ export default function Hero() {
             transition={{ duration: 1, delay: 0.5, ease: "easeOut" }}
             className="mb-8"
           >
-            {/* FIXED: Better mobile text sizes */}
             <p className="text-lg sm:text-xl md:text-2xl text-slate-300 font-light mb-2">
               Computer Engineering Student
             </p>
@@ -279,7 +258,6 @@ export default function Hero() {
   );
 }
 
-// Preload the GLB models
+// Preload only the models used in Hero
 useGLTF.preload('/models/laptop.glb');
-useGLTF.preload('/models/earth.glb');
-useGLTF.preload('/models/airplane.glb'); 
+useGLTF.preload('/models/airplane.glb');
