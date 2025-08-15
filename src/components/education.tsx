@@ -256,7 +256,8 @@ function EarthScene() {
       {/* Properly sized airplane */}
       <RealisticAirplane />
       
-      <Environment preset="sunset" intensity={0.3} />
+   <Environment preset="sunset" environmentIntensity={0.3} />
+
     </>
   );
 }
