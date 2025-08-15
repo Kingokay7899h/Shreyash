@@ -5,12 +5,12 @@ import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import { MapPin, Calendar, Award, Globe } from 'lucide-react';
 
-// Realistic Earth component with your actual textures
+// IMPROVED: Brighter, more realistic Earth component
 function RealisticEarth() {
   const earthRef = useRef<THREE.Mesh>(null);
   const cloudsRef = useRef<THREE.Mesh>(null);
   
-  // Load your actual textures
+  // Load textures
   const earthTexture = useLoader(THREE.TextureLoader, '/textures/earth_8k.jpg');
   const normalTexture = useLoader(THREE.TextureLoader, '/textures/earth_normal.jpg');
   const cloudsTexture = useLoader(THREE.TextureLoader, '/textures/clouds.png');
@@ -26,32 +26,37 @@ function RealisticEarth() {
 
   return (
     <group>
-      {/* Main Earth sphere with realistic textures */}
+      {/* IMPROVED: Brighter Earth with better lighting */}
       <Sphere ref={earthRef} args={[2, 64, 64]}>
         <meshStandardMaterial
           map={earthTexture}
           normalMap={normalTexture}
-          metalness={0.1}
-          roughness={0.9}
+          metalness={0.2}
+          roughness={0.7}
+          // IMPROVED: Add emissive for brightness
+          emissive="#001122"
+          emissiveIntensity={0.15}
         />
       </Sphere>
       
-      {/* Cloud layer */}
+      {/* Brighter cloud layer */}
       <Sphere ref={cloudsRef} args={[2.02, 64, 64]}>
         <meshStandardMaterial
           map={cloudsTexture}
           transparent
-          opacity={0.4}
+          opacity={0.3}
           alphaMap={cloudsTexture}
+          emissive="#ffffff"
+          emissiveIntensity={0.05}
         />
       </Sphere>
       
-      {/* Atmosphere glow */}
-      <Sphere args={[2.1, 64, 64]}>
+      {/* Brighter atmosphere glow */}
+      <Sphere args={[2.15, 64, 64]}>
         <meshBasicMaterial
           transparent
-          opacity={0.1}
-          color="#60a5fa"
+          opacity={0.15}
+          color="#4a90e2"
           side={THREE.BackSide}
         />
       </Sphere>
@@ -59,18 +64,18 @@ function RealisticEarth() {
   );
 }
 
-// Tiny airplane component using your GLB model
-function TinyAirplane() {
+// FIXED: Realistic tiny airplane following actual Oman-Goa route
+function RealisticAirplane() {
   const { scene } = useGLTF('/models/airplane.glb');
   const airplaneRef = useRef<THREE.Group>(null);
   const [progress, setProgress] = useState(0);
   
   useFrame(() => {
-    setProgress((prev) => (prev + 0.003) % 1); // Slower for more realistic flight
+    setProgress((prev) => (prev + 0.004) % 1); // Slightly faster but still realistic
   });
 
-  // Convert lat/lng to 3D coordinates
-  const latLngTo3D = (lat: number, lng: number, radius: number = 2.15) => {
+  // Convert lat/lng to 3D coordinates on Earth surface
+  const latLngTo3D = (lat: number, lng: number, radius: number = 2.18) => {
     const phi = (90 - lat) * (Math.PI / 180);
     const theta = (lng + 180) * (Math.PI / 180);
     return new THREE.Vector3(
@@ -80,31 +85,40 @@ function TinyAirplane() {
     );
   };
 
+  // Actual coordinates
   const muscatPos = latLngTo3D(23.5859, 58.4059); // Oman
-  const goaPos = latLngTo3D(15.4167, 74.0167);   // Goa
+  const goaPos = latLngTo3D(15.2993, 74.1240);    // Goa, India
   
-  // Create curved flight path
+  // Create realistic flight arc
+  const midPoint = new THREE.Vector3()
+    .addVectors(muscatPos, goaPos)
+    .multiplyScalar(0.5)
+    .normalize()
+    .multiplyScalar(2.8); // Higher altitude for international flight
+  
   const curve = new THREE.QuadraticBezierCurve3(
     muscatPos,
-    new THREE.Vector3(0, 3.5, 0), // Higher arc
+    midPoint,
     goaPos
   );
   
   const currentPosition = curve.getPointAt(progress);
-  const nextPosition = curve.getPointAt((progress + 0.01) % 1);
+  const nextPosition = curve.getPointAt((progress + 0.02) % 1);
   
   useEffect(() => {
     if (airplaneRef.current && scene) {
-      // Position airplane
       airplaneRef.current.position.copy(currentPosition);
       
-      // Make airplane look towards next position
-      const lookAtVector = nextPosition.clone().sub(currentPosition).normalize();
+      // Make airplane face the direction of travel
+      const direction = nextPosition.clone().sub(currentPosition).normalize();
       airplaneRef.current.lookAt(
-        currentPosition.x + lookAtVector.x,
-        currentPosition.y + lookAtVector.y,
-        currentPosition.z + lookAtVector.z
+        currentPosition.x + direction.x,
+        currentPosition.y + direction.y,
+        currentPosition.z + direction.z
       );
+      
+      // Slight banking for realism
+      airplaneRef.current.rotation.z = Math.sin(progress * Math.PI * 2) * 0.1;
     }
   }, [currentPosition, nextPosition, scene]);
 
@@ -112,14 +126,24 @@ function TinyAirplane() {
     <group ref={airplaneRef}>
       <primitive 
         object={scene.clone()} 
-        scale={0.05} // Tiny airplane
-        rotation={[0, Math.PI, 0]} // Adjust orientation if needed
+        scale={0.015} // FIXED: Much smaller, realistic scale
+        rotation={[0, Math.PI, 0]}
       />
+      
+      {/* Add a subtle trail effect */}
+      <mesh position={[-0.2, 0, 0]}>
+        <sphereGeometry args={[0.02, 8, 8]} />
+        <meshBasicMaterial 
+          color="#ffffff" 
+          transparent 
+          opacity={0.3}
+        />
+      </mesh>
     </group>
   );
 }
 
-// FIXED: Flight path visualization using Line from @react-three/drei
+// Flight path with better visualization
 function FlightPath() {
   const latLngTo3D = (lat: number, lng: number, radius: number = 2.05) => {
     const phi = (90 - lat) * (Math.PI / 180);
@@ -132,11 +156,18 @@ function FlightPath() {
   };
 
   const muscatPos = latLngTo3D(23.5859, 58.4059);
-  const goaPos = latLngTo3D(15.4167, 74.0167);
+  const goaPos = latLngTo3D(15.2993, 74.1240);
+  
+  // Create flight arc
+  const midPoint = new THREE.Vector3()
+    .addVectors(muscatPos, goaPos)
+    .multiplyScalar(0.5)
+    .normalize()
+    .multiplyScalar(2.6);
   
   const curve = new THREE.QuadraticBezierCurve3(
     muscatPos,
-    new THREE.Vector3(0, 3, 0),
+    midPoint,
     goaPos
   );
   
@@ -144,52 +175,88 @@ function FlightPath() {
 
   return (
     <group>
-      {/* FIXED: Flight path line using Line component from @react-three/drei */}
+      {/* Flight path line */}
       <Line
         points={points}
-        color="#f59e0b"
-        lineWidth={3}
+        color="#fbbf24"
+        lineWidth={2}
         segments
+        transparent
+        opacity={0.8}
       />
       
       {/* Muscat marker (red dot) */}
       <Float speed={2} rotationIntensity={0.1} floatIntensity={0.1}>
         <mesh position={muscatPos}>
-          <sphereGeometry args={[0.04, 16, 16]} />
-          <meshStandardMaterial color="#ef4444" emissive="#ef4444" emissiveIntensity={0.5} />
+          <sphereGeometry args={[0.05, 16, 16]} />
+          <meshStandardMaterial 
+            color="#ef4444" 
+            emissive="#ef4444" 
+            emissiveIntensity={0.6}
+          />
+        </mesh>
+        {/* Label ring for Muscat */}
+        <mesh position={muscatPos}>
+          <torusGeometry args={[0.08, 0.01, 8, 16]} />
+          <meshBasicMaterial color="#ef4444" transparent opacity={0.5} />
         </mesh>
       </Float>
       
       {/* Goa marker (green dot) */}
       <Float speed={2.2} rotationIntensity={0.1} floatIntensity={0.1}>
         <mesh position={goaPos}>
-          <sphereGeometry args={[0.04, 16, 16]} />
-          <meshStandardMaterial color="#10b981" emissive="#10b981" emissiveIntensity={0.5} />
+          <sphereGeometry args={[0.05, 16, 16]} />
+          <meshStandardMaterial 
+            color="#10b981" 
+            emissive="#10b981" 
+            emissiveIntensity={0.6}
+          />
+        </mesh>
+        {/* Label ring for Goa */}
+        <mesh position={goaPos}>
+          <torusGeometry args={[0.08, 0.01, 8, 16]} />
+          <meshBasicMaterial color="#10b981" transparent opacity={0.5} />
         </mesh>
       </Float>
     </group>
   );
 }
 
-// Main 3D Scene with realistic Earth
+// IMPROVED: Main 3D Scene with better lighting
 function EarthScene() {
   return (
     <>
       <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={50} />
-      <ambientLight intensity={0.3} />
-      <directionalLight position={[10, 10, 5]} intensity={0.8} />
-      <pointLight position={[-10, -10, -5]} intensity={0.3} color="#60a5fa" />
       
-      {/* Your realistic Earth model instead of green ball */}
+      {/* IMPROVED: Better lighting setup for brighter earth */}
+      <ambientLight intensity={0.5} color="#ffffff" />
+      <directionalLight 
+        position={[10, 10, 5]} 
+        intensity={1.2} 
+        color="#ffffff"
+        castShadow
+      />
+      <pointLight 
+        position={[-5, 3, 3]} 
+        intensity={0.4} 
+        color="#4a90e2" 
+      />
+      <pointLight 
+        position={[5, -3, -3]} 
+        intensity={0.3} 
+        color="#fbbf24" 
+      />
+      
+      {/* Brighter, more realistic Earth */}
       <RealisticEarth />
       
-      {/* Flight path between Oman and Goa */}
+      {/* Realistic flight path */}
       <FlightPath />
       
-      {/* Tiny airplane flying the route */}
-      <TinyAirplane />
+      {/* Properly sized airplane */}
+      <RealisticAirplane />
       
-      <Environment preset="night" />
+      <Environment preset="sunset" intensity={0.3} />
     </>
   );
 }
@@ -399,6 +466,10 @@ export default function Education() {
                   <div className="flex items-center">
                     <div className="w-3 h-1 bg-yellow-500 mr-2"></div>
                     <span className="text-slate-300">Flight Path</span>
+                  </div>
+                  <div className="flex items-center">
+                    <div className="w-3 h-1 bg-white mr-2"></div>
+                    <span className="text-slate-300">Current Journey</span>
                   </div>
                 </div>
               </div>
