@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { Canvas, useFrame, useLoader } from '@react-three/fiber';
-import { Sphere, PerspectiveCamera, Environment, Float, useGLTF } from '@react-three/drei';
+import { Sphere, PerspectiveCamera, Environment, Float, useGLTF, Line } from '@react-three/drei';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as THREE from 'three';
 import { MapPin, Calendar, Award, Globe } from 'lucide-react';
@@ -119,7 +119,7 @@ function TinyAirplane() {
   );
 }
 
-// Flight path visualization
+// FIXED: Flight path visualization using Line from @react-three/drei
 function FlightPath() {
   const latLngTo3D = (lat: number, lng: number, radius: number = 2.05) => {
     const phi = (90 - lat) * (Math.PI / 180);
@@ -141,14 +141,16 @@ function FlightPath() {
   );
   
   const points = curve.getPoints(100);
-  const geometry = new THREE.BufferGeometry().setFromPoints(points);
 
   return (
     <group>
-      {/* Flight path line */}
-      <line geometry={geometry}>
-        <lineBasicMaterial color="#f59e0b" linewidth={2} />
-      </line>
+      {/* FIXED: Flight path line using Line component from @react-three/drei */}
+      <Line
+        points={points}
+        color="#f59e0b"
+        lineWidth={3}
+        segments
+      />
       
       {/* Muscat marker (red dot) */}
       <Float speed={2} rotationIntensity={0.1} floatIntensity={0.1}>
@@ -483,7 +485,7 @@ export default function Education() {
                 <div className="text-slate-400">Expected Graduation</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-green-400 mb-2">Global</div>
+                 <div className="text-3xl font-bold text-green-400 mb-2">Global</div>
                 <div className="text-slate-400">Career Aspirations</div>
               </div>
               <div className="text-center">
