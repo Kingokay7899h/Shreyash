@@ -47,25 +47,6 @@ function ParticleField() {
 }
 
 // 3D floating laptop model
-function FloatingLaptop() {
-  const laptopRef = useRef<THREE.Group>(null);
-  const { scene } = useGLTF('/models/laptop.glb');
-
-  useFrame((state) => {
-    if (laptopRef.current) {
-      laptopRef.current.rotation.y = Math.sin(state.clock.elapsedTime * 0.3) * 0.1;
-      laptopRef.current.position.y = Math.sin(state.clock.elapsedTime * 0.5) * 0.2;
-    }
-  });
-
-  return (
-    <Float speed={1.5} rotationIntensity={0.3} floatIntensity={0.5}>
-      <group ref={laptopRef} position={[3, 0, 0]} scale={[0.5, 0.5, 0.5]}>
-        <primitive object={scene.clone()} />
-      </group>
-    </Float>
-  );
-}
 
 // REMOVED: FloatingEarth component - this was causing the conflict!
 // The earth model should only appear in the Education section
@@ -149,7 +130,7 @@ function Scene3D() {
       <Hero3DText />
       
       <Suspense fallback={<LoadingFallback />}>
-        <FloatingLaptop />
+      
         {/* REMOVED: <FloatingEarth /> - This was causing the conflict */}
         <FloatingAirplane />
       </Suspense>
@@ -259,5 +240,4 @@ export default function Hero() {
 }
 
 // Preload only the models used in Hero
-useGLTF.preload('/models/laptop.glb');
 useGLTF.preload('/models/airplane.glb');
